@@ -1,11 +1,41 @@
 import platform
+import subprocess
 import os
 import time
-from PyFiglet import Figlet
 def menu():
-    print("[1]")
-    print("[2]")
-    print("[0] Exit the Program")
+    os.chdir(os.path.dirname(__file__))
+    try:
+        # Define the list of ASCII art files
+        ascii_files = ["NetworkFixerAscii.txt", "NetworkFixerAscii2.txt", "NetworkFixerAscii3.txt", "NetworkFixerAscii4.txt"]
+
+        # Set the console color to green on black
+        os.system('color 02')
+
+        # Animate the ASCII art
+        for file in ascii_files:
+            # Clear the console
+            os.system('cls')
+            # Open the current ASCII art file
+            with open(file, encoding="utf-8") as f:
+                # Print the current frame
+                print("\033[92m" + f.read() + "\033[0m")
+            # Print the menu options
+            print("\033[93m" + "By ☠ Defender Of Christ ☦" + "\033[0m")
+            
+            print("Select an option:")
+            print("[1]")
+            print("[2]")
+            print("[0] Exit the Program")
+            # Wait for a short time
+            time.sleep(0.4)
+
+        # Reset the console color to default
+        os.system('color')
+
+    except FileNotFoundError:
+        print("Error: One or more ASCII art files not found.")
+        print(os.listdir())
+
     
 menu()
 option = int(input("Enter your option: "))
@@ -14,26 +44,44 @@ def clearWindows():
 def clearLinux():
     os.system('clear')
 
+
+
 while option != 0: 
     if option == 1:
         #do option 1 stuff
-        print("option 1 has been called, clearing after 5 seconds")
-        time.sleep(5)
+        print("Restart Network Adapters, clearing after complete")
+        import subprocess
+        # Restart network adapters
+        subprocess.run(["netsh", "interface", "set", "interface", "name=", "adminstate=DISABLED"], shell=True)
+        subprocess.run(["netsh", "interface", "set", "interface", "name=", "adminstate=ENABLED"], shell=True)
+        time.sleep(1)
         if platform.system() == "Windows":
             clearWindows()
         else:
+            subprocess.run(["sudo", "ifdown", "-a"], shell=True)
+            subprocess.run(["sudo", "ifup", "-a"], shell=True)
             clearLinux()
+
+
+
     elif option == 2:
         #do option 2 stuff
-        print("option 2 has been called, clearing after 5 seconds")
-        time.sleep(5)
+        print("Flushing DNS Cache, clearing after complete")
+        subprocess.run(["ipconfig", "/flushdns"], shell=True)
+        time.sleep(1)
         if platform.system() == "Windows":
             clearWindows()
         else:
+            subprocess.run(["sudo", "service", "network-manager", "restart"], shell=True)
             clearLinux()
+
+
+
     else:
         print("Invalid option")
-    
+
+
+
     print()
     menu()
     option = int(input("Enter your option: "))
