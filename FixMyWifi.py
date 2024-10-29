@@ -51,9 +51,22 @@ while option != 0:
         #do option 1 stuff
         print("Restart Network Adapters, clearing after complete")
         import subprocess
+        # Get wifi interface name
+        output = subprocess.run(["netsh", "wlan", "show", "interfaces"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = output.stdout.decode()
+        interface_name = None
+        for line in output.splitlines():
+            if "Description" in line:
+                interface_name = line.split(":")[1].strip()
+                break
         # Restart network adapters
-        subprocess.run(["netsh", "interface", "set", "interface", "name=", "adminstate=DISABLED"], shell=True)
-        subprocess.run(["netsh", "interface", "set", "interface", "name=", "adminstate=ENABLED"], shell=True)
+        if interface_name:
+            # Disable the Wi-Fi interface
+            subprocess.run(["netsh", "interface", "set", "interface", "name=" + interface_name, "adminstate=DISABLED"], shell=True)
+            # Enable the Wi-Fi interface
+            subprocess.run(["netsh", "interface", "set", "interface", "name=" + interface_name, "adminstate=ENABLED"], shell=True)
+        else:
+            print("Could not find the current Wi-Fi interface name")
         time.sleep(1)
         if platform.system() == "Windows":
             clearWindows()
